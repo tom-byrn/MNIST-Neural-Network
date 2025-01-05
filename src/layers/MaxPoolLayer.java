@@ -1,4 +1,4 @@
-package Layers;
+package layers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class MaxPoolLayer extends Layer{
     List<int[][]> _lastMaxRow;
     List<int[][]> _lastMaxCol;
 
-    public MaxPoolLayer(int _stepSize, int _inRows, int _inCols, int _inLength, int _windowSize) {
+    public MaxPoolLayer(int _stepSize, int _windowSize, int _inLength, int _inRows, int _inCols) {
         this._stepSize = _stepSize;
         this._inRows = _inRows;
         this._inCols = _inCols;
@@ -42,7 +42,7 @@ public class MaxPoolLayer extends Layer{
         int[][] maxRows = new int[getOutputRows()][getOutputCols()];
         int[][] maxCols = new int[getOutputRows()][getOutputCols()];
 
-        for(int r = 0; r < getOutputRows(); r += _stepSize){
+        for(int r = 0; r < getOutputRows(); r+= _stepSize){
             for(int c = 0; c < getOutputCols(); c+= _stepSize){
 
                 double max = 0.0;
@@ -50,7 +50,7 @@ public class MaxPoolLayer extends Layer{
                 maxCols[r][c] = -1;
 
                 for(int x = 0; x < _windowSize; x++){
-                    for(int y = 0; y < _windowSize; y++){
+                    for(int y = 0; y < _windowSize; y++) {
                         if(max < input[r+x][c+y]){
                             max = input[r+x][c+y];
                             maxRows[r][c] = r+x;
@@ -58,13 +58,17 @@ public class MaxPoolLayer extends Layer{
                         }
                     }
                 }
+
                 output[r][c] = max;
+
             }
         }
+
         _lastMaxRow.add(maxRows);
         _lastMaxCol.add(maxCols);
 
         return output;
+
     }
 
     @Override

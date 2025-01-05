@@ -1,11 +1,11 @@
-package Layers;
+package layers;
 
 import java.util.List;
 import java.util.Random;
 
 public class FullyConnectedLayer extends Layer{
 
-    private Long SEED; //Used for setting weights
+    private long SEED; //Used for setting weights
     private final double leak = 0.01;
 
     private double[][] _weights;
@@ -16,10 +16,11 @@ public class FullyConnectedLayer extends Layer{
     private double[] lastZ;
     private double[] lastX;
 
-    public FullyConnectedLayer(int _inLength, int _outLength, double[][] _weights, double _learningRate) {
+    public FullyConnectedLayer(int _inLength, int _outLength, long SEED, double _learningRate) {
         this._inLength = _inLength;
         this._outLength = _outLength;
         this._learningRate = _learningRate;
+        this.SEED = SEED;
 
         //Each output is the sum of each input * weight
         //There is a separate weight for each interaction, so the size of the weights matrix is going to be the number of inputs * outputs
@@ -36,17 +37,24 @@ public class FullyConnectedLayer extends Layer{
 
         for(int i = 0; i < _inLength; i++){
             for(int j = 0; j < _outLength; j++){
-                z[j] += input[i] * _weights[i][j];
+
+                try {
+                    z[j] += input[i] * _weights[i][j];
+                } catch(IndexOutOfBoundsException e){
+                    System.out.println("input length: " + input.length);
+                    System.out.println("Length of loop for i (_inLength): " + _inLength + "\t\tValue of i: " + i);
+                    System.out.println("Length of loop for j/size of z/size of out (_outLength): " + _outLength + "\t\tValue of j: " + j);
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         lastZ = z;
 
-        for(int i = 0; i < _inLength; i++){
-            for(int j = 0; j < _outLength; j++){
-                out[j] = relu(z[j]);
-            }
+        for(int j = 0; j < _outLength; j++){
+            out[j] = relu(z[j]);
         }
+
 
         return out;
     }
