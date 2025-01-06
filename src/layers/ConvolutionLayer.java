@@ -35,7 +35,7 @@ public class ConvolutionLayer extends Layer{
 
     private void generateRandomFilters(int numFilters){
         List<double[][]> filters = new ArrayList<>();
-        Random random = new Random();
+        Random random = new Random(SEED);
 
         for(int n = 0; n < numFilters; n++){
             double[][] newFilter = new double[_filterSize][_filterSize];
@@ -79,7 +79,7 @@ public class ConvolutionLayer extends Layer{
         double[][] output = new double[outRows][outCols];
 
         int outRow = 0;
-        int outCol = 0;
+        int outCol;
 
         for(int i = 0; i <= inRows - fRows; i += stepSize){
 
@@ -87,7 +87,7 @@ public class ConvolutionLayer extends Layer{
 
             for(int j = 0; j <= inCols - fCols; j += stepSize){
 
-                double sum = 0;
+                double sum = 0.0;
 
                 //Apply filter around this position
                 for(int x = 0; x < fRows; x++){
@@ -148,7 +148,7 @@ public class ConvolutionLayer extends Layer{
         List<double[][]> filtersDelta = new ArrayList<>();
         List<double[][]> dLdOPreviousLayer = new ArrayList<>();
 
-        for(int f = 0; f < _filterSize; f++){
+        for(int f = 0; f < _filters.size(); f++){
             filtersDelta.add(new double[_filterSize][_filterSize]);
         }
 
@@ -157,6 +157,8 @@ public class ConvolutionLayer extends Layer{
             double[][] errorForInput = new double[_inRows][_inCols];
 
             for(int f = 0; f < _filters.size(); f++){
+                System.out.println("Filters size: " + _filters.size());
+                System.out.println("dLdO size: " + dLdO.size() + ", Accessing index: " + (i * _filters.size() + f));
 
                 double[][] currFilter = _filters.get(f);
                 double[][] error = dLdO.get(i * _filters.size() + f);
@@ -174,7 +176,7 @@ public class ConvolutionLayer extends Layer{
             dLdOPreviousLayer.add(errorForInput);
         }
 
-        for(int f = 0; f < _filterSize; f++){
+        for(int f = 0; f < _filters.size(); f++){
             double[][] modified = add(filtersDelta.get(f), _filters.get(f));
             _filters.set(f, modified);
         }
@@ -226,7 +228,7 @@ public class ConvolutionLayer extends Layer{
         double[][] output = new double[outRows][outCols];
 
         int outRow = 0;
-        int outCol = 0;
+        int outCol;
 
         for(int i = -fRows + 1; i < inRows; i++){
 
@@ -234,7 +236,7 @@ public class ConvolutionLayer extends Layer{
 
             for(int j = -fCols + 1; j < inCols; j++){
 
-                double sum = 0;
+                double sum = 0.0;
 
                 //Apply filter around this position
                 for(int x = 0; x < fRows; x++){
@@ -266,7 +268,7 @@ public class ConvolutionLayer extends Layer{
 
     @Override
     public int getOutputLength() {
-        return _filters.size() + _inLength;
+        return _filters.size() * _inLength;
     }
 
     @Override

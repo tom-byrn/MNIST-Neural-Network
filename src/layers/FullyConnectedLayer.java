@@ -51,8 +51,10 @@ public class FullyConnectedLayer extends Layer{
 
         lastZ = z;
 
-        for(int j = 0; j < _outLength; j++){
-            out[j] = relu(z[j]);
+        for(int i = 0; i < _inLength; i++){
+            for(int j = 0; j < _outLength; j++){
+                out[j] = relu(z[j]);
+            }
         }
 
 
@@ -84,13 +86,14 @@ public class FullyConnectedLayer extends Layer{
 
     @Override
     public void backPropagation(double[] dLdO) {
+
+        double[] dLdX = new double[_inLength];
+
         //Using chain rule to get dLength/dWeight
         double dOdz;
         double dZdW;
         double dLdW;
         double dZdX;
-
-        double[] dLdX = new double[_inLength];
 
         for(int k = 0; k < _inLength; k++){
 

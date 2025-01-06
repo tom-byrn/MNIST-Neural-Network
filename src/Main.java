@@ -36,6 +36,7 @@ public class Main{
             shuffle(imagesTrain);
             net.train(imagesTrain);
             rate = net.test(imagesTest);
+            System.out.println("Success rate after round " + (i + 1) + ": " + rate);
         }
 
     }
